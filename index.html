@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>경찰대 기출 영단어 학습</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 30px;
+            font-size: 1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: white;
+            color: #2c3e50;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* 플래시 카드 섹션 */
+        .flashcard-section {
+            perspective: 1000px;
+        }
+
+        .cards-container {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+
+        .cards-container::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .cards-container::-webkit-scrollbar-track {
+            background: #e0e0e0;
+            border-radius: 10px;
+        }
+
+        .cards-container::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .card {
+            min-width: 280px;
+            height: 200px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1.2s ease-out;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            text-align: center;
+            backface-visibility: hidden;
+            border-radius: 12px;
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        .word {
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .meaning {
+            font-size: 1.3em;
+            line-height: 1.6;
+        }
+
+        .click-hint {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
+        .card-counter {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        /* 퀴즈 섹션 */
+        .quiz-section {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .quiz-content {
+            text-align: center;
+        }
+
+        .quiz-word {
+            font-size: 2.5em;
+            color: #2c3e50;
+            margin: 30px 0;
+            font-weight: 700;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .option-btn {
+            padding: 20px;
+            font-size: 1.1em;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .option-btn:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .option-btn.correct {
+            background: #2ecc71;
+            color: white;
+            border-color: #2ecc71;
+        }
+
+        .option-btn.incorrect {
+            background: #e74c3c;
+            color: white;
+            border-color: #e74c3c;
+        }
+
+        .quiz-result {
+            font-size: 1.3em;
+            margin: 20px 0;
+            font-weight: 600;
+            min-height: 30px;
+        }
+
+        .result-message {
+            color: #2ecc71;
+        }
+
+        .result-message.wrong {
+            color: #e74c3c;
+        }
+
+        .next-btn, .shuffle-btn {
+            padding: 12px 40px;
+            font-size: 1em;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .next-btn:hover, .shuffle-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .next-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .stats {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 8px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .quiz-options {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                min-width: 250px;
+                height: 180px;
+            }
+
+            .word {
+                font-size: 1.5em;
+                margin-bottom: 15px;
+            }
+
+            .meaning {
+                font-size: 1.1em;
+            }
+
+            .quiz-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 경찰대 기출 영단어</h1>
+            <p>3D 플래시 카드로 쉽고 즐겁게 학습하세요</p>
+        </div>
+
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab('flashcard')">플래시 카드</button>
+            <button class="tab-btn" onclick="switchTab('quiz')">미니 퀴즈</button>
+        </div>
+
+        <!-- 플래시 카드 탭 -->
+        <div id="flashcard" class="tab-content active">
+            <div class="flashcard-section">
+                <div class="cards-container" id="cardsContainer"></div>
+                <div style="text-align: center; color: #7f8c8d; margin-top: 20px;">
+                    카드를 클릭하면 뜻이 보여집니다 👆
+                </div>
+            </div>
+        </div>
+
+        <!-- 퀴즈 탭 -->
+        <div id="quiz" class="tab-content">
+            <div class="quiz-section">
+                <div class="quiz-content">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                    <div style="color: #7f8c8d; margin-bottom: 20px;">
+                        <span id="quizCounter">1</span> / <span id="quizTotal">5</span>
+                    </div>
+                    
+                    <div class="quiz-word" id="quizWord">ephemeral</div>
+                    
+                    <div class="quiz-options" id="quizOptions"></div>
+                    
+                    <div class="quiz-result" id="quizResult"></div>
+                    
+                    <button class="next-btn" id="nextBtn" onclick="nextQuestion()" disabled>다음 문제</button>
+                    <button class="shuffle-btn" onclick="initializeQuiz(true)">다시 시작</button>
+                    
+                    <div class="stats" id="quizStats" style="display: none;">
+                        <div>정답률: <strong id="correctRate">0%</strong></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 데이터 - 경찰대 기출 고난도 영단어 150개 (예시문장 포함)
+        const words = [
+            { word: "ephemeral", meaning: "일시적인, 짧은 기간 동안만 존재하는", example: "The cherry blossoms are ephemeral, lasting only a few weeks each spring." },
+            { word: "ubiquitous", meaning: "어디나 있는, 널리 퍼져 있는", example: "Smartphones have become ubiquitous in modern society." },
+            { word: "perspicacious", meaning: "통찰력 있는, 예리한 판단력을 가진", example: "Her perspicacious analysis of the market trends proved invaluable." },
+            { word: "ameliorate", meaning: "개선하다, 상황을 나아지게 하다", example: "The new policy was designed to ameliorate the living conditions of poor families." },
+            { word: "obfuscate", meaning: "혼란스럽게 하다, 불명확하게 하다", example: "The witness's testimony was intended to obfuscate the truth." },
+            { word: "ambiguous", meaning: "애매한, 여러 의미로 해석될 수 있는", example: "The contract contained ambiguous language that led to disputes." },
+            { word: "pragmatic", meaning: "실질적인, 현실적인", example: "We need a pragmatic approach to solve this financial crisis." },
+            { word: "pragmatism", meaning: "실용주의, 현실주의", example: "Her pragmatism made her an excellent business leader." },
+            { word: "benevolent", meaning: "자비로운, 선한", example: "The benevolent millionaire donated millions to charity." },
+            { word: "benevolence", meaning: "자선, 친절", example: "His benevolence toward the poor was widely admired." },
+            { word: "dormant", meaning: "휴면 상태의, 잠재된", example: "The volcano has been dormant for centuries." },
+            { word: "somnolent", meaning: "졸린, 졸음을 유발하는", example: "The somnolent atmosphere of the library made it hard to stay awake." },
+            { word: "soporific", meaning: "수면을 유도하는, 지루한", example: "His soporific voice put the entire audience to sleep." },
+            { word: "sedentary", meaning: "앉아서 하는, 움직임이 적은", example: "Sedentary jobs have become increasingly common in the modern workforce." },
+            { word: "itinerant", meaning: "이곳저곳을 도는, 떠돌이의", example: "The itinerant musician traveled from town to town." },
+            { word: "peripatetic", meaning: "여행을 다니는, 걸어다니는", example: "His peripatetic lifestyle kept him constantly on the move." },
+            { word: "nascent", meaning: "초기 단계의, 막 시작된", example: "The nascent technology shows great promise for the future." },
+            { word: "incipient", meaning: "초기의, 시작 단계의", example: "The incipient signs of infection required immediate treatment." },
+            { word: "zenith", meaning: "정점, 최고조", example: "The company reached its zenith during the dot-com boom." },
+            { word: "nadir", meaning: "최저점, 가장 낮은 지점", example: "The nadir of his career came after the business failure." },
+            { word: "acme", meaning: "정상, 최고점", example: "That was the acme of his artistic achievement." },
+            { word: "apex", meaning: "꼭짓점, 최고점", example: "He reached the apex of the mountain after hours of climbing." },
+            { word: "pinnacle", meaning: "봉우리, 최고 지점", example: "Winning the championship was the pinnacle of her sports career." },
+            { word: "crescendo", meaning: "점점 증가, 절정", example: "The music built to a magnificent crescendo." },
+            { word: "denouement", meaning: "결말, 막", example: "The denouement of the novel revealed the killer's identity." },
+            { word: "denunciation", meaning: "비난, 고발", example: "His denunciation of corruption shocked the entire nation." },
+            { word: "castigate", meaning: "엄격히 꾸짖다, 비난하다", example: "The teacher castigated the students for their poor performance." },
+            { word: "chastise", meaning: "벌하다, 꾸짖다", example: "Parents should chastise their children when they misbehave." },
+            { word: "reprimand", meaning: "꾸짖다, 타이르다", example: "The manager decided to reprimand the employee for lateness." },
+            { word: "admonish", meaning: "경고하다, 훈계하다", example: "The coach admonished his team about their lack of discipline." },
+            { word: "remonstrate", meaning: "항의하다, 강력히 반대하다", example: "The citizens remonstrated against the unfair tax increase." },
+            { word: "excoriate", meaning: "비난하다, 피부를 벗기다", example: "The critic excoriated the film in her review." },
+            { word: "vituperation", meaning: "욕설, 심한 비난", example: "His vituperation toward the referee was inappropriate." },
+            { word: "invective", meaning: "욕설, 신랄한 비판", example: "The politician hurled invective at his opponents during the debate." },
+            { word: "virulent", meaning: "맹렬한, 악성의", example: "The virulent strain of the virus spread rapidly." },
+            { word: "venomous", meaning: "독을 가진, 악의적인", example: "Her venomous comments deeply hurt her friend." },
+            { word: "pungent", meaning: "자극적인, 날카로운 냄새의", example: "The pungent smell of garlic filled the kitchen." },
+            { word: "acerbic", meaning: "신맛이 나는, 신랄한", example: "His acerbic wit made him a popular comedian." },
+            { word: "acrimonious", meaning: "쓸쓸한, 소원해진", example: "The acrimonious divorce left both parties angry." },
+            { word: "asperity", meaning: "거친 말투, 차갑고 무례함", example: "She spoke with such asperity that no one dared to respond." },
+            { word: "trenchant", meaning: "예리한, 신랄한", example: "His trenchant analysis cut through the complex issues." },
+            { word: "caustic", meaning: "부식성의, 신랄한", example: "The caustic remarks damaged her reputation." },
+            { word: "mordant", meaning: "신랄한, 깨물려는", example: "His mordant sense of humor wasn't appreciated by everyone." },
+            { word: "scathing", meaning: "심한 비판의, 따끔한", example: "The review was scathing about the restaurant's service." },
+            { word: "scabrous", meaning: "거친, 외설적인", example: "The scabrous details of his past were revealed in court." },
+            { word: "ribald", meaning: "외설적인, 저속한", example: "His ribald jokes offended the conservative audience." },
+            { word: "profane", meaning: "신성모독의, 속된", example: "He was reprimanded for using profane language in the workplace." },
+            { word: "sacrilege", meaning: "신성모독, 불경", example: "It would be sacrilege to desecrate this holy temple." },
+            { word: "desecrate", meaning: "신성함을 훼손하다", example: "The vandals attempted to desecrate the historic monument." },
+            { word: "blasphemy", meaning: "신성모독, 저주", example: "In medieval times, blasphemy was punishable by death." },
+            { word: "impiety", meaning: "불경, 불신앙", example: "His impiety shocked the religious community." },
+            { word: "infidelity", meaning: "부정, 불신앙", example: "The infidelity was discovered by the spouse's private investigator." },
+            { word: "duplicity", meaning: "이중성, 기만", example: "His duplicity was exposed when his lies came to light." },
+            { word: "chicanery", meaning: "책략, 사기", example: "The company was accused of chicanery in its accounting practices." },
+            { word: "subterfuge", meaning: "간계, 기만", example: "He resorted to subterfuge to gain access to the restricted area." },
+            { word: "artifice", meaning: "술책, 기술", example: "Her artifice in negotiation impressed the business partners." },
+            { word: "stratagems", meaning: "술책, 전략", example: "The general employed various stratagems to defeat the enemy." },
+            { word: "machination", meaning: "음모, 획책", example: "Behind the scenes, machinations were underway to overthrow the government." },
+            { word: "intrigue", meaning: "음모, 호기심", example: "The international intrigue captivated readers of the spy thriller." },
+            { word: "conspiracy", meaning: "공모, 음모", example: "The conspiracy to assassinate the president was discovered." },
+            { word: "collusion", meaning: "공모, 담합", example: "The companies were charged with collusion to fix prices." },
+            { word: "connivance", meaning: "암묵적 동의, 묵인", example: "The manager's connivance allowed the theft to continue." },
+            { word: "complicity", meaning: "공범, 동조", example: "His complicity in the crime made him equally guilty." },
+            { word: "culpable", meaning: "유죄의, 비난받을 만한", example: "The negligent driver was found culpable in the accident." },
+            { word: "culprit", meaning: "범인, 유죄자", example: "The culprit was apprehended by police." },
+            { word: "miscreant", meaning: "악한 자, 범죄자", example: "The miscreant terrorized the neighborhood for years." },
+            { word: "reprobate", meaning: "악한 자, 타락한", example: "He was considered a reprobate by society." },
+            { word: "degenerate", meaning: "타락하다, 퇴화된", example: "His moral standards began to degenerate after the scandal." },
+            { word: "depravity", meaning: "타락, 부도덕", example: "The depravity shown in the crime shocked everyone." },
+            { word: "iniquity", meaning: "부정, 죄악", example: "The iniquity of slavery marked a dark chapter in history." },
+            { word: "perjury", meaning: "위증, 거짓 증언", example: "He was convicted of perjury for lying under oath." },
+            { word: "mendacity", meaning: "거짓말, 기만성", example: "His mendacity was evident when his stories didn't add up." },
+            { word: "prevarication", meaning: "기만, 거짓말", example: "The politician's prevarication angered the voters." },
+            { word: "equivocation", meaning: "모호한 말, 기만", example: "His equivocation made it unclear what his true position was." },
+            { word: "fallacy", meaning: "오류, 거짓 논리", example: "The argument was based on a logical fallacy." },
+            { word: "sophistry", meaning: "궤변, 헛된 논리", example: "His sophistry couldn't convince anyone of his innocence." },
+            { word: "specious", meaning: "그럴듯하지만 거짓의", example: "The specious argument sounded reasonable but was fundamentally flawed." },
+            { word: "spurious", meaning: "가짜의, 거짓의", example: "The spurious evidence was thrown out of court." },
+            { word: "counterfeit", meaning: "위조의, 가짜", example: "The counterfeit bills were nearly impossible to distinguish from real ones." },
+            { word: "fabrication", meaning: "제조, 거짓말", example: "Her entire story was a fabrication designed to evade responsibility." },
+            { word: "fictitious", meaning: "가정의, 허구의", example: "The character was entirely fictitious and not based on anyone real." },
+            { word: "apocryphal", meaning: "신빙성 없는, 거짓인", example: "That anecdote is likely apocryphal, lacking historical evidence." },
+            { word: "dubious", meaning: "의심스러운, 확실하지 않은", example: "His claim to fame was highly dubious and unverifiable." },
+            { word: "questionable", meaning: "의심스러운", example: "The ethical standards of the company were questionable." },
+            { word: "ambivalent", meaning: "양가적인, 애매한 태도의", example: "She felt ambivalent about accepting the job offer." },
+            { word: "equivocal", meaning: "애매한, 모호한", example: "His equivocal response didn't clarify his true intentions." },
+            { word: "enigmatic", meaning: "수수께끼 같은, 신비로운", example: "The enigmatic smile of the portrait fascinated art lovers." },
+            { word: "cryptic", meaning: "비밀스러운, 신비로운", example: "His cryptic message left everyone confused." },
+            { word: "obscure", meaning: "어두운, 불명확한", example: "The rules were written in obscure language that few could understand." },
+            { word: "opaque", meaning: "불투명한, 이해하기 어려운", example: "The government's opaque decision-making process frustrated citizens." },
+            { word: "inscrutable", meaning: "알 수 없는, 신비스러운", example: "His inscrutable expression gave away nothing." },
+            { word: "incomprehensible", meaning: "이해할 수 없는", example: "The technical jargon was incomprehensible to laypeople." },
+            { word: "abstruse", meaning: "이해하기 어려운, 난해한", example: "The abstruse philosophical theories were difficult to grasp." },
+            { word: "recondite", meaning: "난해한, 깊이 있는", example: "His recondite knowledge of ancient languages was impressive." },
+            { word: "esoteric", meaning: "비밀스러운, 소수만 아는", example: "The esoteric teachings of the cult were known only to initiates." },
+            { word: "arcane", meaning: "신비로운, 비밀스러운", example: "The arcane rituals were performed in secret." },
+            { word: "occult", meaning: "신비로운, 초자연적인", example: "She was fascinated by occult practices and mysticism." },
+            { word: "mystical", meaning: "신비로운, 영적인", example: "The mystical atmosphere of the temple was profoundly moving." },
+            { word: "metaphysical", meaning: "형이상학적인, 추상적인", example: "The metaphysical questions about existence have puzzled philosophers for centuries." },
+            { word: "ethereal", meaning: "가늘고 섬세한, 초월적인", example: "Her ethereal beauty captivated everyone in the room." },
+            { word: "ethereally", meaning: "가볍고 섬세하게", example: "The dancer moved ethereally across the stage." },
+            { word: "gossamer", meaning: "거미줄 같이 가는, 투명한", example: "The gossamer fabric of her dress was delicate and beautiful." },
+            { word: "diaphanous", meaning: "투명한, 반투명의", example: "The diaphanous curtains allowed soft light to filter through." },
+            { word: "translucent", meaning: "반투명의, 약간 빛이 통하는", example: "The translucent glass panel provided privacy while allowing light through." },
+            { word: "luminous", meaning: "빛나는, 밝은", example: "The luminous dial of the watch glowed in the dark." },
+            { word: "radiant", meaning: "빛나는, 광선을 내는", example: "Her radiant smile brightened everyone's day." },
+            { word: "scintillate", meaning: "반짝이다, 빛나다", example: "The diamonds scintillate beautifully in the sunlight." },
+            { word: "resplendent", meaning: "화려하게 빛나는, 찬란한", example: "The resplendent palace was a marvel of architecture." },
+            { word: "effulgent", meaning: "찬란하게 빛나는", example: "The effulgent sun cast a golden glow over the landscape." },
+            { word: "incandescent", meaning: "흰 열로 빛나는, 열정적인", example: "His incandescent passion for music was infectious." },
+            { word: "phosphorescent", meaning: "인광을 내는, 희미하게 빛나는", example: "The phosphorescent paint glowed in the dark." },
+            { word: "fluorescent", meaning: "형광을 내는", example: "The fluorescent lights in the office were harsh on the eyes." },
+            { word: "iridescent", meaning: "무지개색으로 빛나는", example: "The iridescent wings of the butterfly were magnificent." },
+            { word: "opalescent", meaning: "오팔 같이 빛나는", example: "The opalescent sheen of the pearl was mesmerizing." },
+            { word: "lambent", meaning: "부드럽게 빛나는, 장난스러운", example: "The lambent flames danced in the fireplace." },
+            { word: "lucid", meaning: "맑은, 명확한", example: "His lucid explanation made the complex concept understandable." },
+            { word: "pellucid", meaning: "투명한, 명백한", example: "The pellucid water of the mountain stream was pristine." },
+            { word: "perspicuous", meaning: "명백한, 이해하기 쉬운", example: "The perspicuous writing style made the essay easy to follow." },
+            { word: "articulate", meaning: "명확한, 표현 능력이 있는", example: "She is an articulate speaker who commands attention." },
+            { word: "eloquent", meaning: "유창한, 웅변의", example: "His eloquent speech moved the audience to tears." },
+            { word: "florid", meaning: "화려한, 홍색의", example: "His florid writing style was excessive and overwrought." },
+            { word: "grandiose", meaning: "거대한, 웅대한", example: "His grandiose plans were too ambitious to be realistic." },
+            { word: "bombastic", meaning: "거창한, 과장된 말투의", example: "The bombastic announcements couldn't hide the company's failures." },
+            { word: "pretentious", meaning: "거만한, 허세 부리는", example: "His pretentious attitude made him unpopular among colleagues." },
+            { word: "ostentatious", meaning: "화려한, 자랑스러운", example: "The ostentatious display of wealth seemed inappropriate." },
+            { word: "flamboyant", meaning: "화려한, 현란한", example: "The flamboyant performer stole the show." },
+            { word: "gaudy", meaning: "무르익게 화려한, 천박한", example: "The gaudy decorations were an eyesore." },
+            { word: "tawdry", meaning: "싸구려 같은 화려한, 천박한", example: "The tawdry jewelry looked expensive but was cheap." },
+            { word: "garish", meaning: "자극적으로 화려한, 야한", example: "The garish colors of the advertisement were attention-grabbing." },
+            { word: "lurid", meaning: "끔찍한, 자극적인", example: "The lurid details of the crime fascinated the media." },
+            { word: "sensational", meaning: "흥미로운, 자극적인", example: "The sensational headline exaggerated the true story." },
+            { word: "salient", meaning: "두드러진, 주요한", example: "The salient points of his argument were difficult to refute." },
+            { word: "prominent", meaning: "두드러진, 중요한", example: "He occupied a prominent position in the government." },
+            { word: "conspicuous", meaning: "두드러진, 눈에 띄는", example: "His conspicuous absence from the meeting was noted." },
+            { word: "manifest", meaning: "분명한, 명백히 보이다", example: "The symptoms of the disease manifest within a few days." },
+            { word: "evident", meaning: "분명한, 명백한", example: "It was evident that he was not telling the truth." },
+            { word: "palpable", meaning: "뚜렷한, 만져질 것 같은", example: "The tension in the room was palpable." },
+            { word: "tangible", meaning: "실질적인, 만질 수 있는", example: "We need tangible results, not just promises." },
+            { word: "concrete", meaning: "구체적인, 실질적인", example: "Please provide concrete examples to support your theory." },
+            { word: "substantive", meaning: "실질적인, 본질적인", example: "The discussion lacked substantive content." },
+            { word: "intrinsic", meaning: "본질적인, 내재적인", example: "The intrinsic value of the painting made it priceless." },
+            { word: "inherent", meaning: "타고난, 본질적인", example: "There is an inherent risk in any investment." },
+            { word: "innate", meaning: "타고난, 선천적인", example: "Her innate talent for music was evident from childhood." },
+            { word: "inborn", meaning: "타고난, 선천적인", example: "Some people have an inborn ability to learn languages." },
+            { word: "indigenous", meaning: "토착의, 고유한", example: "Indigenous peoples have inhabited this land for thousands of years." },
+            { word: "endemic", meaning: "풍토병의, 특정 지역의", example: "Malaria is endemic to tropical regions." },
+            { word: "atypical", meaning: "비전형적인, 특이한", example: "His atypical approach to the problem was surprisingly effective." },
+            { word: "anomalous", meaning: "비정상적인, 이상한", example: "The anomalous results puzzled the researchers." },
+            { word: "aberrant", meaning: "일반적이지 않은, 일탈한", example: "His aberrant behavior shocked his family." },
+            { word: "deviant", meaning: "벗어난, 일탈한", example: "Deviant behavior is often punished by society." },
+            { word: "idiosyncratic", meaning: "독특한, 개인적인", example: "His idiosyncratic taste in music was quite unusual." },
+            { word: "eccentric", meaning: "기이한, 중심을 벗어난", example: "The eccentric old man lived alone in the woods." },
+            { word: "quirky", meaning: "독특한, 괴상한", example: "She has a quirky sense of humor that appeals to few." },
+            { word: "whimsical", meaning: "변덕스러운, 기발한", example: "The whimsical plot of the film was both charming and confusing." },
+            { word: "capricious", meaning: "변덕스러운, 임의적인", example: "The capricious weather made planning the picnic difficult." },
+            { word: "mercurial", meaning: "변덕스러운, 재치 있는", example: "His mercurial temperament made him unpredictable." },
+            { word: "volatile", meaning: "변덕스러운, 휘발하는", example: "The volatile situation could explode into violence at any moment." },
+            { word: "fickle", meaning: "변덕스러운, 어수선한", example: "Fickle voters often change their minds before elections." },
+            { word: "inconstant", meaning: "일정하지 않은, 변덕스러운", example: "His inconstant support for the cause disappointed allies." },
+            { word: "vacillate", meaning: "흔들리다, 결정을 못 내리다", example: "He continued to vacillate between the two job offers." },
+            { word: "equivocate", meaning: "애매하게 말하다, 기만하다", example: "The politician equivocated when asked about his voting record." },
+            { word: "prevaricate", meaning: "기만하다, 거짓말을 하다", example: "Witnesses prevaricated to protect the defendant." }
+        ];
+
+        let currentQuizIndex = 0;
+        let quizAnswered = false;
+        let correctCount = 0;
+        let quizSequence = [];
+
+        function init() {
+            initializeFlashcards();
+            initializeQuiz(false);
+        }
+
+        function initializeFlashcards() {
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = '';
+            
+            words.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-inner">
+                        <div class="card-face card-front">
+                            <div class="card-counter">${index + 1}/${words.length}</div>
+                            <div class="word">${item.word}</div>
+                            <div class="click-hint">클릭하면 뜻이 나옵니다</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <div class="meaning">${item.meaning}</div>
+                            <div style="font-size: 0.9em; margin-top: 15px; line-height: 1.4; opacity: 0.9; font-style: italic;">"${item.example}"</div>
+                            <div class="click-hint">클릭하면 영단어가 나옵니다</div>
+                        </div>
+                    </div>
+                `;
+                
+                card.addEventListener('click', function() {
+                    this.classList.toggle('flipped');
+                });
+                
+                container.appendChild(card);
+            });
+        }
+
+        function initializeQuiz(reset = false) {
+            if (reset) {
+                correctCount = 0;
+            }
+            
+            quizSequence = [...Array(words.length).keys()].sort(() => Math.random() - 0.5);
+            currentQuizIndex = 0;
+            quizAnswered = false;
+            
+            document.getElementById('quizStats').style.display = 'none';
+            updateQuizProgress();
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            quizAnswered = false;
+            document.getElementById('nextBtn').disabled = true;
+            document.getElementById('quizResult').textContent = '';
+            
+            const wordIndex = quizSequence[currentQuizIndex];
+            const currentWord = words[wordIndex];
+            
+            document.getElementById('quizWord').textContent = currentWord.word;
+            
+            let options = [currentWord.meaning];
+            const otherWords = words.filter((w, i) => i !== wordIndex);
+            const wrongOptions = otherWords
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 3)
+                .map(w => w.meaning);
+            
+            options = [...options, ...wrongOptions].sort(() => Math.random() - 0.5);
+            
+            const optionsContainer = document.getElementById('quizOptions');
+            optionsContainer.innerHTML = '';
+            
+            options.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option;
+                btn.onclick = () => checkAnswer(option, currentWord.meaning, btn);
+                optionsContainer.appendChild(btn);
+            });
+            
+            updateQuizProgress();
+        }
+
+        function checkAnswer(selected, correct, btnElement) {
+            if (quizAnswered) return;
+            
+            quizAnswered = true;
+            document.getElementById('nextBtn').disabled = false;
+            
+            const allButtons = document.querySelectorAll('.option-btn');
+            allButtons.forEach(btn => btn.disabled = true);
+            
+            const wordIndex = quizSequence[currentQuizIndex];
+            const currentWord = words[wordIndex];
+            
+            if (selected === correct) {
+                btnElement.classList.add('correct');
+                document.getElementById('quizResult').innerHTML = `<div>정답입니다! 🎉</div><div style="font-size: 0.9em; margin-top: 10px; font-style: italic; opacity: 0.9;">"${currentWord.example}"</div>`;
+                document.getElementById('quizResult').className = 'quiz-result result-message';
+                correctCount++;
+            } else {
+                btnElement.classList.add('incorrect');
+                allButtons.forEach(btn => {
+                    if (btn.textContent === correct) {
+                        btn.classList.add('correct');
+                    }
+                });
+                document.getElementById('quizResult').innerHTML = `<div>틀렸습니다. 정답: ${currentWord.word}</div><div style="font-size: 0.9em; margin-top: 10px; font-style: italic; opacity: 0.9;">"${currentWord.example}"</div>`;
+                document.getElementById('quizResult').className = 'quiz-result result-message wrong';
+            }
+        }
+
+        function nextQuestion() {
+            currentQuizIndex++;
+            
+            if (currentQuizIndex >= words.length) {
+                showQuizResults();
+            } else {
+                loadQuestion();
+            }
+        }
+
+        function showQuizResults() {
+            const correctRate = Math.round((correctCount / words.length) * 100);
+            document.getElementById('quizStats').style.display = 'block';
+            document.getElementById('correctRate').textContent = correctRate + '%';
+            
+            const resultText = document.createElement('div');
+            resultText.style.cssText = 'margin: 20px 0; font-size: 1.5em; color: #2c3e50; font-weight: 600;';
+            resultText.textContent = `완료! ${correctCount}/${words.length} 정답`;
+            
+            document.querySelector('.quiz-content').insertBefore(
+                resultText,
+                document.getElementById('quizStats')
+            );
+            
+            document.getElementById('quizWord').style.display = 'none';
+            document.getElementById('quizOptions').style.display = 'none';
+            document.getElementById('quizResult').textContent = '';
+            document.getElementById('nextBtn').style.display = 'none';
+        }
+
+        function updateQuizProgress() {
+            const progress = ((currentQuizIndex) / words.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('quizCounter').textContent = currentQuizIndex + 1;
+            document.getElementById('quizTotal').textContent = words.length;
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabName === 'quiz' && currentQuizIndex >= words.length) {
+                initializeQuiz(true);
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
